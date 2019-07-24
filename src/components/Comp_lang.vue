@@ -1,6 +1,6 @@
 <template>
   <div>
-    <my-table :data="comps" :link_url='link_url' :split="split" :column_list="column_list" :detail="detail" :add_type="add_type"></my-table>
+    <my-table :data="comps" :link_url='link_url' :split="split" :column_list="column_list" :detail="detail" :add_type="add_type" :getData="getData"></my-table>
   </div>
 </template>
 <script>
@@ -16,12 +16,14 @@ export default {
     }
   },
   methods: {
+    getData() {
+      this.$ajax.get("/api/comp_lang?id=" + this.$route.query.id).then(res => {
+        this.comps = res.data;
+      })
+    }
   },
   created() {
-      this.$ajax.get("/api/comp_lang?id=" + this.$route.query.id).then(res => {
-        console.log(res)
-      this.comps = res.data;
-    })
+      this.getData();
   }
 }
 </script>

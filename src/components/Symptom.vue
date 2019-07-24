@@ -1,6 +1,6 @@
 <template>
     <div>
-        <my-table :data="symptoms" :link_url='link_url' :split="split" :column_list="column_list" :detail="detail" :add_type="add_type" :kind="kind"></my-table>
+        <my-table :data="symptoms" :link_url='link_url' :split="split" :column_list="column_list" :detail="detail" :add_type="add_type" :kind="kind" :getData="getData"></my-table>
     </div>
 </template>
 <script>
@@ -16,19 +16,24 @@ export default {
             kind: 1
         }
     },
-    created() {
-        if(!this.$route.query.kind) {
-            var url = "/api/symptom";
-            this.$ajax.get(url).then(res => {
-                this.symptoms = res.data;
-            })
-        } else if(this.$route.query.kind == 2) {
-            this.$ajax.get("/api/symptom?kind=2").then(res => {
-                if(res.data == "0") return this.$router.push("/login");
-                this.symptoms = res.data;
-                this.kind = 2;
-            })
+    methods: {
+        getData() {
+            if(!this.$route.query.kind) {
+                var url = "/api/symptom";
+                this.$ajax.get(url).then(res => {
+                    this.symptoms = res.data;
+                })
+            } else if(this.$route.query.kind == 2) {
+                this.$ajax.get("/api/symptom?kind=2").then(res => {
+                    if(res.data == "0") return this.$router.push("/login");
+                    this.symptoms = res.data;
+                    this.kind = 2;
+                })
+            }
         }
+    },
+    created() {
+        this.getData();
     },
     watch: {
         $route(to, from) {
@@ -39,8 +44,6 @@ export default {
                 })
             }
         }
-    },
-    methods: {
     }
 }
 </script>

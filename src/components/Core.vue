@@ -1,9 +1,9 @@
 <template>
     <div>
         <h2 class="title">二次问诊</h2>
-        <my-table :data="questions" :link_url='link_url' :split="split" :column_list="questions_column_list" :detail="false" :add_type="'question'"></my-table>
+        <my-table :data="questions" :link_url='link_url' :split="split" :column_list="questions_column_list" :detail="false" :add_type="'question'" :getData="getQuestions"></my-table>
         <h2 class="title">核心指标</h2>
-        <my-table :data="cores" :link_url='link_url' :split="split" :column_list="column_list" :detail="detail" :add_type="add_type"></my-table>
+        <my-table :data="cores" :link_url='link_url' :split="split" :column_list="column_list" :detail="detail" :add_type="add_type" :getData="getData"></my-table>
     </div>
 </template>
 <script>
@@ -21,14 +21,20 @@ export default {
         }
     },
     created() {
-         this.$ajax.get("/api/core?id=" + this.$route.query.id).then(res => {
-             this.cores = res.data;
-         })
-         this.$ajax.get("/api/question?id=" + this.$route.query.id).then(res => {
-             this.questions = res.data;
-         })
+         this.getData();
+         this.getQuestions();
     },
     methods: {
+        getData() {
+            this.$ajax.get("/api/core?id=" + this.$route.query.id).then(res => {
+                this.cores = res.data;
+            })
+        },
+        getQuestions() {
+            this.$ajax.get("/api/question?id=" + this.$route.query.id).then(res => {
+                this.questions = res.data;
+            })
+        }
     }
 }
 </script>

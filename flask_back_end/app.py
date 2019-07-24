@@ -8,6 +8,7 @@ from sql import Comp_lang, Core, Symptom, Question, User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import json
+from cal_sim import simcal
 
 app = Flask(__name__)
 auth = HTTPTokenAuth(scheme='Bearer')
@@ -26,13 +27,8 @@ def render():
 @auth.login_required
 def query():
 	mySession = session()
-	# index = int(request.args.get("index"))
 	core_id = request.args.get("id")
-	# 一页返回20条数据
-	# limit = 20
-	# index *= limit
 	arr = []
-	# for item in mySession.query(Comp_lang).filter(Comp_lang.core_id == core_id).limit(limit).offset(index):
 	try:
 		for item in mySession.query(Comp_lang).filter(Comp_lang.core_id == core_id).all():
 			arr.append([item.id, item.desc])
@@ -43,14 +39,6 @@ def query():
 	
 	return json.dumps(arr)
 
-# @app.route('/api/up_photo', methods=['post'])
-# def up_photo():
-#     img = request.files.get('file')
-#     # username = request.form.get("name")
-#     path = "./static/photo/"
-#     file_path = path+img.filename
-#     img.save(file_path)
-#     return "ok"
 @app.route("/api/core")
 @auth.login_required
 def query_core():
@@ -306,6 +294,45 @@ def update_password():
 	finally:
 		mySession.close()
 	return "ok"
+
+@app.route('/search')
+def search():
+	question0 = request.args.get("talk")
+	if len(question0) <= 1:
+		return "err_more"
+	question = question0.replace('（','(')
+	question = question.replace('）',')')
+	question = question.replace('、',')')
+	question = question.replace('“','')
+	question = question.replace('”','')
+	question = question.replace(' ','')
+	symptom_id = simcal(question.encode("utf-8"))
+	mySession = session()
+	arr = []
+	try:
+		for item in mySession.query(Question).filter(Question.symptom_id == int(symptom_id)).all():
+			arr.append({"id": item.id, "question": item.question})
+	except:
+		return "err"
+	finally:
+		mySession.close()
+	return json.dumps(arr)
+
+@app.route('/advice', methods=['POST'])
+def advice():
+	questions = request.form.get("questions")
+	print(questions)
+	questions = json.loads(questions)
+	mySession = session()
+	for item in questions:
+		if item["answer"] == 1:
+			symptom_id = mySession.query(Question).filter(Question.id == item["id"]).first().symptom_id
+			advice = mySession.query(Symptom).filter(Symptom.id == symptom_id).first().advice
+			return advice
+		else:
+			return "None"
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=2001)

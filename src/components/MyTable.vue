@@ -7,10 +7,10 @@
             :data="data"
             border
             style="width: 100%">
-            <el-table-column
+            <!-- <el-table-column
             prop="0"
             label="ID">
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
             prop="1"
             :label="column_list[0]">
@@ -68,7 +68,7 @@
 import Qs from 'qs'  // 这个库是用来..em..反正axios发送post请求就用这个库把数据转换一下，然后修改headers才能成功
 export default {
     name: 'MyTable',
-    props: ["data", "link_url", "split", "column_list", "detail", "add_type", "kind"],
+    props: ["data", "link_url", "split", "column_list", "detail", "add_type", "kind", "getData"],
     data() {
         return {
             dialogVisible: false,   // 修改业务的弹出框
@@ -76,13 +76,15 @@ export default {
             dialogVisible3: false,  // 删除业务的弹出框
             edit_list: [],
             new_data: ["", ""],
-            post_ok: false,
+            post_ok: false,    // 用来管理添加成功的提示条是否显示
             del_id: 0,
             is_core: false,
             is_symptom: false,
             core_name: "",
             symptom_name: ""
         }
+    },
+    created() {
     },
     methods: {
         link(row) {
@@ -127,7 +129,6 @@ export default {
                     break;
                 }
             }
-            console.log(type)
             this.$ajax.post(url, Qs.stringify({"id": this.del_id, "type": type}), {headers:{'Content-Type':'application/x-www-form-urlencoded'}}).then(res => {
                 if(res.data == "ok") window.location.reload();
             })
@@ -145,11 +146,12 @@ export default {
             }
         },
         edit_new() {
+            this.new_data = ["", ""];
             this.dialogVisible2 = true;
         },
         edit(row) {
             this.dialogVisible = true;
-            this.edit_list = row
+            this.edit_list = row;
         },
         new_one(url) {
             var type = this.$props.add_type;
@@ -161,6 +163,7 @@ export default {
                 ).then(res => {
                     if(res.data == 'ok') {
                         this.post_ok = true;
+                        this.$props.getData();
                     }
                 })
             } else if(type == "core") {
@@ -171,6 +174,7 @@ export default {
                 ).then(res => {
                     if(res.data == 'ok') {
                         this.post_ok = true;
+                        this.$props.getData();
                     }
                 })
             } else if(type == "comp_lang") {
@@ -181,6 +185,7 @@ export default {
                 ).then(res => {
                     if(res.data == 'ok') {
                         this.post_ok = true;
+                        this.$props.getData();
                     }
                 })
             } else if(type == "question") {
@@ -191,6 +196,7 @@ export default {
                 ).then(res => {
                     if(res.data == 'ok') {
                         this.post_ok = true;
+                        this.$props.getData();
                     }
                 })
             }
