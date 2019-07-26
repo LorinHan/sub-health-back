@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       "/api":{
-        target:"http://localhost:2001",//访问的服务器地址
+        target:"http://zehuo.huoran.net",//访问的服务器地址
         changeOrigin:true,//true为开启代理
         //secure: true, // 如果是https接口，需要配置这个参数
         pathRewrite:{

@@ -2,8 +2,8 @@
     <div class="login">
         <h2 class="title">数据管理系统</h2>
         <el-input prefix-icon="el-icon-menu" type="text" v-model="username" placeholder="请输入用户名"></el-input>
-        <el-input prefix-icon="el-icon-menu" type="password" v-model="password" placeholder="请输入密码" auto-complete="off"></el-input>
-        <el-button type="primary" @click="login">登 录</el-button>
+        <el-input prefix-icon="el-icon-menu" type="password" v-model="password" placeholder="请输入密码" @keyup.enter.native="login" auto-complete="off"></el-input>
+        <el-button type="primary" id="login" @click="login">登 录</el-button>
     </div>
 </template>
 <script>
